@@ -23,6 +23,16 @@ public class WebsocketTest {
 Note the use of JDK 8 member references to separate the logic of connecting from the
 code that has the conversation.
 
+To use, add the Maven repository as [described here](https://timboudreau.com/builds/) and
+
+```xml
+<dependency>
+    <artifactId>blather</artifactId>
+    <groupId>com.mastfrog</groupId>
+    <version>2.0.1-dev</version>
+</dependency>
+```
+
 Manipulating The Connection
 ---------------------------
 
