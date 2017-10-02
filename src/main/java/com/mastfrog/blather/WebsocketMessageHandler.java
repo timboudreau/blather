@@ -42,6 +42,6 @@ public interface WebsocketMessageHandler<T> {
      * @return A reply message to marshal and send, or null to send no reply (you
      * can hold onto the ChannelControl and send one asynchronously if necessary).
      */
-    Object onMessage(int msgIndex, T data, ChannelControl ctrl);
+    Object onMessage(int msgIndex, T data, ChannelControl ctrl) throws Exception;
 
 }

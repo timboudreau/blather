@@ -70,9 +70,9 @@ public class TestApplication extends Application {
 
         @Override
         protected void configure() {
-            install(new ServerModule(TestApplication.class));
+            install(new ServerModule<>(TestApplication.class));
             install(new BlatherTestModule());
-            bind(OnWebsocketConnect.class).to(OWC.class);
+//            bind(OnWebsocketConnect.class).to(OWC.class);
         }
     }
 
@@ -88,6 +88,7 @@ public class TestApplication extends Application {
     static class WsTestPage extends Page {
 
         @Inject
+        @SuppressWarnings("deprecation")
         WsTestPage(ActeurFactory af) {
             add(af.matchMethods(true, Method.GET, Method.POST));
             add(af.matchPath("^ws$"));
@@ -98,6 +99,7 @@ public class TestApplication extends Application {
         static class EchoWebsocketActeur extends Acteur {
 
             @Inject
+            @SuppressWarnings("unchecked")
             EchoWebsocketActeur(WebSocketFrame frame, ObjectMapper mapper, Deferral defer) throws IOException {
                 System.out.println("Inbound frame: " + frame);
                 if (frame instanceof TextWebSocketFrame) {

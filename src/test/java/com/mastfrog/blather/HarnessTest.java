@@ -26,9 +26,12 @@ package com.mastfrog.blather;
 import com.mastfrog.acteur.headers.Headers;
 import com.mastfrog.giulius.tests.GuiceRunner;
 import com.mastfrog.giulius.tests.TestWith;
+import static com.mastfrog.util.collections.CollectionUtils.map;
+import com.mastfrog.util.collections.StringObjectMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import java.time.Duration;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -41,10 +44,9 @@ public class HarnessTest {
 
     int count = 0;
 
-    @Test(timeout=20000)
+    @Test(timeout = 20000)
     public void test(WebsocketHostClient client) throws Throwable {
-        client.request("/ws")
-                .log()
+        client.request("/ws", "hello")
                 .addHeader(Headers.stringHeader("X-Foo"), "bar")
                 .addUrlQueryPair("foo", "bar")
                 .onMessage(String.class, this::withFrame)
@@ -64,6 +66,23 @@ public class HarnessTest {
 
     public Object bypass(int msgIndex, String data, ChannelControl ctrl) {
         System.out.println("BYPASS GOT " + data);
+        ctrl.close();
+        return null;
+    }
+
+    @Test(timeout = 20000)
+    public void testJson(WebsocketHostClient client) throws Throwable {
+        client.request("/ws", map("this").to("that").build())
+                .addHeader(Headers.stringHeader("X-Foo"), "bar")
+                .addUrlQueryPair("foo", "bar")
+                .onMessage(StringObjectMap.class, this::withJson)
+                .await(Duration.ofSeconds(20));
+    }
+
+    public Object withJson(int msgIndex, StringObjectMap data, ChannelControl ctrl) {
+        System.out.println("JSON GOT: " + data);
+        assertEquals("that", data.get("this"));
+        assertEquals(Boolean.TRUE, data.get("echo"));
         ctrl.close();
         return null;
     }
