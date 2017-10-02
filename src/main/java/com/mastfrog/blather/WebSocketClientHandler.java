@@ -84,7 +84,13 @@ final class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
 
         @Override
         public <T> ChannelFuture send(T message) {
-            return channel().writeAndFlush(fconvert.apply(cb));
+            ChannelFuture result = channel().writeAndFlush(fconvert.apply(cb));
+            result.addListener((ChannelFuture f) -> {
+                if (!f.isSuccess()) {
+                    exceptionCaught(null, f.cause());
+                }
+            });
+            return result;
         }
 
         @Override

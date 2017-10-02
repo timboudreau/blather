@@ -389,6 +389,9 @@ final class WebSocketClientsImpl extends Blather {
                         log("Websocket handshake FAILED to {0}", url);
                     } else {
                         log("Websocket handshake SUCCESS to {0}", url);
+                        for (OnConnect oc : onConnects) {
+                            oc.onConnect(url, handler.ctrl(f.channel()));
+                        }
                     }
                 });
 
@@ -427,9 +430,6 @@ final class WebSocketClientsImpl extends Blather {
                         });
                         channel.closeFuture().addListener(closeListener);
                         ChannelControl ctrl = handler.ctrl(channel);
-                        for (OnConnect oc : onConnects) {
-                            oc.onConnect(url, ctrl);
-                        }
                     } else {
                         log("Connecting failed, wake up waiters.", f.cause());
                         ex.onException(f.cause(), null);
@@ -536,7 +536,7 @@ final class WebSocketClientsImpl extends Blather {
         public WebSocketFrame onMessage(WebSocketFrame frame, WebSocketFrame data, ChannelControl channel) throws Exception {
             if (type == String.class || type == CharSequence.class) {
                 CharSequence seq = frame instanceof TextWebSocketFrame ? ((TextWebSocketFrame) frame).text()
-                        : frame.content().readCharSequence(0, StandardCharsets.UTF_8);
+                        : frame.content().readCharSequence(frame.content().readableBytes(), StandardCharsets.UTF_8);
                 if (type == String.class) {
                     seq = seq.toString();
                 }
@@ -566,7 +566,7 @@ final class WebSocketClientsImpl extends Blather {
 
         @Override
         public WebSocketFrame onMessage(WebSocketFrame frame, WebSocketFrame data, ChannelControl channel) throws Exception {
-            CharSequence seq = data.content().readCharSequence(0, StandardCharsets.UTF_8);
+            CharSequence seq = data.content().readCharSequence(frame.content().readableBytes(), StandardCharsets.UTF_8);
             String res = delegate.onMessage(frame, seq.toString(), channel);
             if (res != null) {
                 return new TextWebSocketFrame(res);

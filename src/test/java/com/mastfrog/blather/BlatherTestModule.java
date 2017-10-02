@@ -24,6 +24,7 @@
 package com.mastfrog.blather;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.ImplementedBy;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -69,8 +70,34 @@ public class BlatherTestModule extends AbstractModule {
     protected void configure() {
         bind(HK.class).asEagerSingleton();
         bind(WebsocketHostClient.class).to(HarnessImpl.class);
-        bind(ErrorInterceptor.class).to(HarnessImpl.class);
+        if (startServer) {
+            bind(ErrorInterceptor.class).to(HarnessImpl.class);
+        }
         bind(Boolean.class).annotatedWith(Names.named("_startServer")).toInstance(startServer);
+    }
+
+    @ImplementedBy(HostPortImpl.class)
+    public interface HostPort {
+
+        int port();
+
+        default String host() {
+            return "127.0.0.1";
+        }
+    }
+
+    static class HostPortImpl implements HostPort {
+
+        int port = -1;
+
+        @Override
+        public int port() {
+            if (port < 0) {
+                return port = new PortFinder().findAvailableServerPort();
+            }
+            return port;
+        }
+
     }
 
     static class HK extends ServerLifecycleHook {
@@ -102,12 +129,11 @@ public class BlatherTestModule extends AbstractModule {
         private final boolean startServer;
 
         @Inject
-        HarnessImpl(WebSocketClientsImpl clients, Server server, ShutdownHookRegistry reg, @Named("_startServer") boolean startServer) throws IOException {
+        HarnessImpl(WebSocketClientsImpl clients, Server server, ShutdownHookRegistry reg, @Named("_startServer") boolean startServer, HostPort hp) throws IOException {
             this.clients = clients;
             this.server = server;
-            PortFinder ports = new PortFinder();
-            port = ports.findAvailableServerPort();
-            client = (WebSocketClientsImpl.ClientImpl) clients.client("localhost", port);
+            port = hp.port();
+            client = (WebSocketClientsImpl.ClientImpl) clients.client(hp.host(), port);
             this.startServer = startServer;
         }
 
