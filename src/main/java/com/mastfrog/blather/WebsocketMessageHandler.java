@@ -30,7 +30,7 @@ package com.mastfrog.blather;
  * @author Tim Boudreau
  */
 @FunctionalInterface
-interface WebsocketMessageHandler<T> {
+public interface WebsocketMessageHandler<T> {
 
     /**
      *

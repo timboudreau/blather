@@ -39,7 +39,8 @@ import static com.mastfrog.util.Checks.notNull;
 public interface WebsocketClientRequest extends AutoCloseable {
 
     /**
-     * Called when the websocket handshake is completed.
+     * Called when the websocket handshake is completed. Multiple OnConnect
+     * handlers are supported.
      *
      * @param onConnect A callback
      * @return this
@@ -69,7 +70,9 @@ public interface WebsocketClientRequest extends AutoCloseable {
 
     /**
      * Set up a handler which will receive and be able to reply to web socket
-     * messages, which will also receive the raw WebSocketFrame.
+     * messages, which will also receive the raw WebSocketFrame.  Use
+     * {@link WebsocketMessageHandler} unless you really need to get hold
+     * of the raw <i>WebSocketFrame</i>.
      *
      * @param cb The callback
      * @return this
@@ -86,8 +89,10 @@ public interface WebsocketClientRequest extends AutoCloseable {
     WebsocketClientRequest await() throws Throwable;
 
     /**
-     * Wait for the request to complete. Any exceptions thrown while processing
-     * the connection will be rethrown when this call exits.
+     * Wait for the request to complete, either by the connection being closed
+     * intentionally, or an exception triggering its closure. Any exceptions
+     * thrown while processing the connection will be rethrown when this call
+     * exits.
      *
      * @param time Maximum time length to wait
      * @param unit Units for time length
@@ -185,7 +190,8 @@ public interface WebsocketClientRequest extends AutoCloseable {
     WebsocketClientRequest withErrorHandler(WebsocketErrorHandler onError);
 
     /**
-     * Install a callback to run once the connection is closed.
+     * Install a callback to run once the connection is closed.  Multiple
+     * OnDisconnect callbacks may be provided.
      *
      * @param dc A callback
      * @return this

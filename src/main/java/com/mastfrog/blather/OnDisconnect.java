@@ -26,6 +26,7 @@ package com.mastfrog.blather;
 import com.mastfrog.url.URL;
 
 /**
+ * Callback that is invoked when the channel is disconnected.
  *
  * @author Tim Boudreau
  */
