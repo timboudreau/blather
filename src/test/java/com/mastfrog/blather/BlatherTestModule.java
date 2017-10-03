@@ -135,6 +135,7 @@ public class BlatherTestModule extends AbstractModule {
             port = hp.port();
             client = (WebSocketClientsImpl.ClientImpl) clients.client(hp.host(), port);
             this.startServer = startServer;
+            clients.throttle(120);
         }
 
         void proceed() {

@@ -113,6 +113,12 @@ final class WebSocketClientsImpl extends Blather {
         return new ClientImpl(host, port, ssl);
     }
 
+    int throttleInitialRequestMillis;
+
+    void throttle(int ms) {
+        this.throttleInitialRequestMillis = ms;
+    }
+
     final class ClientImpl implements WebsocketHostClient {
 
         private final String host;
@@ -165,17 +171,35 @@ final class WebSocketClientsImpl extends Blather {
             WebsocketErrorHandler onError;
             private boolean log;
             private final Logger logger;
+            private int throttleMillis = throttleInitialRequestMillis;
 
             ReqImpl(String path, Object sendWhenConnected) {
                 this.path = path;
                 if (sendWhenConnected != null) {
                     onConnects.add((OnConnect) (URL ignored, ChannelControl ctrl) -> {
                         log("Send initial message {0} as web socket frame", sendWhenConnected);
+                        throttle();
                         WebSocketFrame frame = toWebSocketFrame(sendWhenConnected, ctrl.channel());
                         ctrl.channel().writeAndFlush(frame);
                     });
                 }
                 logger = Logger.getLogger(url(path).toString());
+            }
+
+            void throttle() {
+                // For tests, which can send a websocket frame back before the
+                // server side has completed setting up the websocket handler -
+                // netty's websocket handler responds with the handshake being
+                // complete before it's finished setting things up on its side
+                if (throttleMillis > 0) {
+                    try {
+                        Thread.sleep(throttleMillis);
+                        // We only need to throttle the initial request
+                        throttleMillis = 0;
+                    } catch (InterruptedException ex) {
+                        Exceptions.chuck(ex);
+                    }
+                }
             }
 
             void log(String s, Object... params) {
@@ -233,6 +257,7 @@ final class WebSocketClientsImpl extends Blather {
 
             public void close() {
                 if (closed.compareAndSet(false, true) && channel != null && channel.isOpen()) {
+                    throttle();
                     channel.writeAndFlush(new CloseWebSocketFrame()).addListener(CLOSE);
                 }
             }
@@ -453,6 +478,7 @@ final class WebSocketClientsImpl extends Blather {
                 onConnects.add((OnConnect) (URL ignored, ChannelControl ctrl) -> {
                     log("Send initial message {0} as web socket frame", message);
                     WebSocketFrame frame = toWebSocketFrame(message, ctrl.channel());
+                    throttle();
                     ctrl.channel().writeAndFlush(frame);
                 });
                 return this;
