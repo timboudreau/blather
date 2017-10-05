@@ -191,7 +191,6 @@ final class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
             if (logger != null) {
                 logger.log(Level.INFO, "Received frame {0}", textFrame);
             }
-            System.out.println("WebSocket Client received message: " + textFrame.text());
             try {
                 WebSocketFrame response = cb.onMessage(frame, frame, ctrl(ctx.channel()));
                 if (response != null) {
@@ -232,7 +231,6 @@ final class WebSocketClientHandler extends SimpleChannelInboundHandler<Object> {
         }
         ctx.newSucceededFuture().addListener((ChannelFuture ff) -> {
             ctx.executor().execute(() -> {
-                System.out.println("Closing from handler");
                 ctx.close();
             });
         });

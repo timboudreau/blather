@@ -65,7 +65,6 @@ public class HarnessTest {
     }
 
     public Object bypass(int msgIndex, String data, ChannelControl ctrl) {
-        System.out.println("BYPASS GOT " + data);
         ctrl.close();
         return null;
     }
@@ -80,7 +79,6 @@ public class HarnessTest {
     }
 
     public Object withJson(int msgIndex, StringObjectMap data, ChannelControl ctrl) {
-        System.out.println("JSON GOT: " + data);
         assertEquals("that", data.get("this"));
         assertEquals(Boolean.TRUE, data.get("echo"));
         ctrl.close();

@@ -26,15 +26,15 @@
             <artifactId>netty-handler</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mastfrog</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>acteur-headers</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mastfrog</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>giulius</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mastfrog</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>url</artifactId>
         </dependency>
         <dependency>
@@ -42,14 +42,14 @@
             <artifactId>jackson-databind</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mastfrog</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>acteur</artifactId>
             <version>${mastfrog.version}</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.mastfrog</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>giulius-tests</artifactId>
             <version>${mastfrog.version}</version>
             <type>jar</type>
@@ -58,26 +58,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.20</version>
-                <configuration>
-                    <parallelMavenExecution>false</parallelMavenExecution>
-                    <reuseForks>false</reuseForks>
-                    <parallel>none</parallel>
-                    <threadCount>0</threadCount>
-                    <forkMode>never</forkMode>
-                    <forkCount>0</forkCount>
-                    <trimStackTrace>false</trimStackTrace>
-                    <useFile>true</useFile>
-                    <systemPropertyVariables>
-                        <acteur.debug>true</acteur.debug>
-                        <forkNumber>${surefire.forkNumber}</forkNumber>
-                        <java.security.egd>file:/dev/./urandom</java.security.egd>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

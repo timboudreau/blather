@@ -30,16 +30,20 @@ import com.google.inject.Provider;
 import com.mastfrog.acteur.Acteur;
 import com.mastfrog.acteur.ActeurFactory;
 import com.mastfrog.acteur.Application;
+import com.mastfrog.acteur.Event;
 import com.mastfrog.acteur.HttpEvent;
 import com.mastfrog.acteur.Page;
+import com.mastfrog.acteur.RequestLogger;
 import com.mastfrog.acteur.headers.Method;
 import com.mastfrog.acteur.server.ServerModule;
 import com.mastfrog.acteur.util.ErrorInterceptor;
+import com.mastfrog.acteur.util.RequestID;
 import com.mastfrog.acteur.websocket.OnWebsocketConnect;
 import com.mastfrog.acteur.websocket.WebSocketUpgradeActeur;
 import com.mastfrog.acteurbase.Deferral;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.channel.Channel;
+import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import java.io.IOException;
@@ -62,17 +66,29 @@ public class TestApplication extends Application {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void onError(Throwable err) {
         icept.get().onError(err);
     }
 
-    static class Module extends AbstractModule {
+    static class Module extends AbstractModule implements RequestLogger {
 
         @Override
         protected void configure() {
             install(new ServerModule<>(TestApplication.class));
             install(new BlatherTestModule());
+            bind(RequestLogger.class).toInstance(this);
 //            bind(OnWebsocketConnect.class).to(OWC.class);
+        }
+
+        @Override
+        public void onBeforeEvent(RequestID rid, Event<?> event) {
+            // do nothing
+        }
+
+        @Override
+        public void onRespond(RequestID rid, Event<?> event, HttpResponseStatus status) {
+            // do nothing
         }
     }
 
@@ -101,17 +117,14 @@ public class TestApplication extends Application {
             @Inject
             @SuppressWarnings("unchecked")
             EchoWebsocketActeur(WebSocketFrame frame, ObjectMapper mapper, Deferral defer) throws IOException {
-                System.out.println("Inbound frame: " + frame);
                 if (frame instanceof TextWebSocketFrame) {
                     TextWebSocketFrame frm = (TextWebSocketFrame) frame;
-                    System.out.println("Reply text");
                     ok(new TextWebSocketFrame("GOT: " + frm.text()));
 //                    ok("GOT: " + frm.text());
                 } else {
                     Map<String, Object> m = mapper.readValue((InputStream) new ByteBufInputStream(frame.content()), Map.class);
                     m = new LinkedHashMap<>(m);
                     m.put("echo", true);
-                    System.out.println("Reply map");
                     ok(m);
                 }
             }
