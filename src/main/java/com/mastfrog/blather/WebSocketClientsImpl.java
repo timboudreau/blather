@@ -23,6 +23,7 @@
  */
 package com.mastfrog.blather;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mastfrog.acteur.headers.HeaderValueType;
 import com.mastfrog.giulius.ShutdownHookRegistry;
@@ -568,10 +569,16 @@ final class WebSocketClientsImpl extends Blather {
                 }
                 return toWebSocketFrame((T) delegate.onMessage(frame, (T) seq, channel), channel.channel());
             }
-            T obj = mapper.readValue((InputStream) new ByteBufInputStream(data.content()), type);
-            T response = delegate.onMessage(frame, obj, channel);
-            if (response != null) {
-                return toWebSocketFrame(response, channel.channel());
+            try {
+                T obj = mapper.readValue((InputStream) new ByteBufInputStream(data.content()), type);
+                T response = delegate.onMessage(frame, obj, channel);
+                if (response != null) {
+                    return toWebSocketFrame(response, channel.channel());
+                }
+            } catch (JsonMappingException ex) {
+                data.content().resetReaderIndex();
+                CharSequence body = data.content().readCharSequence(data.content().readableBytes(), StandardCharsets.UTF_8);
+                throw new IOException("Error parsing message '" + body + "'", ex);
             }
             return null;
         }
