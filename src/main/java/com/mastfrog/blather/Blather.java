@@ -31,7 +31,7 @@ import com.mastfrog.url.ParametersElement;
 import com.mastfrog.url.ParsedParameters;
 import com.mastfrog.url.Protocols;
 import com.mastfrog.url.URL;
-import static com.mastfrog.util.Checks.notNull;
+import static com.mastfrog.util.preconditions.Checks.notNull;
 
 /**
  * Entry point for creating web socket clients - use one of the
