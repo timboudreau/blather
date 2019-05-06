@@ -99,6 +99,10 @@
         <connection>scm:git:https://github.com/timboudreau/blather.git</connection>
         <developerConnection>git@github.com/timboudreau/blather.git</developerConnection>
     </scm>
+    <organization>
+        <name>Mastfrog Technologies</name>
+        <url>https://mastfrog.com</url>
+    </organization>
     <developers>
         <developer>
             <name>Tim Boudreau</name>
