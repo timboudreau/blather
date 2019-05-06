@@ -9,7 +9,10 @@
     </parent>
     <artifactId>blather</artifactId>
     <name>Blather - Websockets</name>
-    <url>https://github.com/timboudreau/blather</url>
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/timboudreau/blather/issues</url>
+    </issueManagement>
     <licenses>
         <license>
             <name>MIT</name>
