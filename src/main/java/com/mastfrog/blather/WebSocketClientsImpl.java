@@ -73,8 +73,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -105,7 +107,7 @@ final class WebSocketClientsImpl extends Blather {
 
     @Inject
     WebSocketClientsImpl(ShutdownHookRegistry registry, ObjectMapper mapper) {
-        registry.add(group);
+        registry.addLast(group);
         this.mapper = mapper;
     }
 
@@ -120,11 +122,13 @@ final class WebSocketClientsImpl extends Blather {
         this.throttleInitialRequestMillis = ms;
     }
 
-    final class ClientImpl implements WebsocketHostClient {
+    final class ClientImpl implements WebsocketHostClient, AutoCloseable {
 
         private final String host;
         private final int port;
         private final boolean ssl;
+        private final Set<ReqImpl> openRequests
+                = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
         ClientImpl(String host, int port, boolean ssl) {
             this.host = host;
@@ -132,14 +136,33 @@ final class WebSocketClientsImpl extends Blather {
             this.ssl = ssl;
         }
 
+        private ReqImpl noteRequest(ReqImpl req) {
+            openRequests.add(req);
+            return req;
+        }
+
+        @Override
+        public void close() throws Exception {
+            for (ReqImpl req : openRequests) {
+                req.close();
+            }
+        }
+
+        public void closeImmediately() throws Exception {
+            for (ReqImpl req : openRequests) {
+                req.closed.set(true);
+                req.channel.close();
+            }
+        }
+
         @Override
         public WebsocketClientRequest request(String path) {
-            return new ReqImpl(notNull("path", path), null);
+            return noteRequest(new ReqImpl(notNull("path", path), null));
         }
 
         @Override
         public WebsocketClientRequest request(String path, Object sendWhenConnected) {
-            return new ReqImpl(notNull("path", path), sendWhenConnected);
+            return noteRequest(new ReqImpl(notNull("path", path), sendWhenConnected));
         }
 
         @Override

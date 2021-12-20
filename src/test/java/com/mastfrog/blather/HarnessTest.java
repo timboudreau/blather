@@ -50,7 +50,7 @@ public class HarnessTest {
                 .addHeader(Headers.stringHeader("X-Foo"), "bar")
                 .addUrlQueryPair("foo", "bar")
                 .onMessage(String.class, this::withFrame)
-                .await(Duration.ofSeconds(20));
+                .await(Duration.ofSeconds(5));
     }
 
     public Object withFrame(int msgIndex, String data, ChannelControl ctrl) {
@@ -75,7 +75,7 @@ public class HarnessTest {
                 .addHeader(Headers.stringHeader("X-Foo"), "bar")
                 .addUrlQueryPair("foo", "bar")
                 .onMessage(StringObjectMap.class, this::withJson)
-                .await(Duration.ofSeconds(20));
+                .await(Duration.ofSeconds(5));
     }
 
     public Object withJson(int msgIndex, StringObjectMap data, ChannelControl ctrl) {

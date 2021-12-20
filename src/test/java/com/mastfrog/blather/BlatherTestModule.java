@@ -136,6 +136,8 @@ public class BlatherTestModule extends AbstractModule {
             client = (WebSocketClientsImpl.ClientImpl) clients.client(hp.host(), port);
             this.startServer = startServer;
             clients.throttle(120);
+            reg.add((AutoCloseable) client::closeImmediately);
+
         }
 
         void proceed() {
