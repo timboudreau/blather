@@ -3,12 +3,17 @@ open module com.mastfrog.blather {
     exports com.mastfrog.blather;
 
     // Sibling com.mastfrog/acteur-headers-3.0.0-dev
-    requires transitive com.mastfrog.acteur.headers;
-    requires transitive com.mastfrog.acteur.util;
+    requires com.mastfrog.acteur.base;
+    requires com.mastfrog.acteur.headers;
+    requires com.mastfrog.acteur.util;
+
+    // Inferred from source scan
+    requires com.mastfrog.collections;
 
     // Sibling com.mastfrog/giulius-3.0.0-dev
     // Transitive detected by source scan
     requires com.mastfrog.giulius;
+    requires com.mastfrog.giulius.tests;
 
     // Sibling com.mastfrog/util-net-3.0.0-dev
     requires com.mastfrog.net;
@@ -18,15 +23,15 @@ open module com.mastfrog.blather {
 
     // Sibling com.mastfrog/url-3.0.0-dev
     requires com.mastfrog.url;
+    requires transitive com.mastfrog.acteur;
 
     // Inferred from source scan
+
     // Transitive detected by source scan
     requires com.mastfrog.util.function;
 
     // derived from io.netty/netty-codec-http-0.0.0-? in io/netty/netty-codec-http/4.1.76.Final/netty-codec-http-4.1.76.Final.pom
-    requires io.netty.buffer;
     requires io.netty.codec.http;
-    requires io.netty.codec;
 
     // derived from io.netty/netty-handler-0.0.0-? in io/netty/netty-handler/4.1.76.Final/netty-handler-4.1.76.Final.pom
     requires io.netty.handler;
@@ -34,5 +39,8 @@ open module com.mastfrog.blather {
     // derived from com.fasterxml.jackson.core/jackson-databind-0.0.0-? in com/fasterxml/jackson/core/jackson-databind/2.9.9.3/jackson-databind-2.9.9.3.pom
     requires transitive com.fasterxml.jackson.databind;
     requires java.logging;
+
+    // Inferred from test-source-scan
+    requires junit;
 
 }
