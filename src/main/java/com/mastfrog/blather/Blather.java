@@ -25,7 +25,8 @@ package com.mastfrog.blather;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.ImplementedBy;
-import com.mastfrog.giulius.ShutdownHookRegistry;
+import com.mastfrog.shutdown.hooks.ShutdownHookRegistry;
+import static com.mastfrog.shutdown.hooks.ShutdownHookRegistry.shutdownHookRegistry;
 import com.mastfrog.url.Parameters;
 import com.mastfrog.url.ParametersElement;
 import com.mastfrog.url.ParsedParameters;
@@ -123,7 +124,7 @@ public abstract class Blather {
      * @return this
      */
     public static Blather create() {
-        return new WebSocketClientsImpl(ShutdownHookRegistry.get(), new ObjectMapper());
+        return new WebSocketClientsImpl(shutdownHookRegistry(), new ObjectMapper());
     }
 
     /**
@@ -134,7 +135,7 @@ public abstract class Blather {
      * @return this
      */
     public static Blather create(ObjectMapper mapper) {
-        return new WebSocketClientsImpl(ShutdownHookRegistry.get(), mapper);
+        return new WebSocketClientsImpl(shutdownHookRegistry(), mapper);
     }
 }
 

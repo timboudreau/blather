@@ -26,7 +26,7 @@ package com.mastfrog.blather;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mastfrog.acteur.headers.HeaderValueType;
-import com.mastfrog.giulius.ShutdownHookRegistry;
+import com.mastfrog.shutdown.hooks.ShutdownHookRegistry;
 import com.mastfrog.url.Path;
 import com.mastfrog.url.Protocol;
 import com.mastfrog.url.Protocols;
@@ -68,7 +68,6 @@ import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;

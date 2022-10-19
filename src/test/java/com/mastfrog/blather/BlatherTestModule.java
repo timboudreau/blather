@@ -34,11 +34,11 @@ import com.mastfrog.acteur.server.ServerLifecycleHook;
 import com.mastfrog.acteur.util.ErrorInterceptor;
 import com.mastfrog.acteur.util.Server;
 import com.mastfrog.acteur.util.ServerControl;
-import com.mastfrog.giulius.ShutdownHookRegistry;
 import com.mastfrog.url.Protocol;
 import com.mastfrog.util.preconditions.Exceptions;
 import com.mastfrog.util.net.PortFinder;
 import com.mastfrog.blather.WebSocketClientsImpl.ClientImpl.ReqImpl;
+import com.mastfrog.shutdown.hooks.ShutdownHookRegistry;
 import io.netty.channel.Channel;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -136,7 +136,7 @@ public class BlatherTestModule extends AbstractModule {
             client = (WebSocketClientsImpl.ClientImpl) clients.client(hp.host(), port);
             this.startServer = startServer;
             clients.throttle(120);
-            reg.add((AutoCloseable) client::closeImmediately);
+            reg.addResource((AutoCloseable) client::closeImmediately);
 
         }
 
