@@ -25,7 +25,7 @@ package com.mastfrog.blather;
 
 import com.mastfrog.acteur.headers.Headers;
 import com.mastfrog.giulius.tests.GuiceRunner;
-import com.mastfrog.giulius.tests.TestWith;
+import com.mastfrog.giulius.tests.anno.TestWith;
 import static com.mastfrog.util.collections.CollectionUtils.map;
 import com.mastfrog.util.collections.StringObjectMap;
 import org.junit.Test;
