@@ -150,7 +150,9 @@ final class WebSocketClientsImpl extends Blather {
         public void closeImmediately() throws Exception {
             for (ReqImpl req : openRequests) {
                 req.closed.set(true);
-                req.channel.close();
+                if (req.channel != null) {
+                    req.channel.close();
+                }
             }
         }
 
@@ -350,7 +352,7 @@ final class WebSocketClientsImpl extends Blather {
                 @Override
                 public void onException(Throwable t, ChannelHandlerContext ctx) {
                     if (onError != null) {
-                        if (!onError.onError(thrown)) {
+                        if (!onError.onError(t)) {
                             log("WebsocketErrorHandler suppressing exception", t);
                             return;
                         }

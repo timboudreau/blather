@@ -71,7 +71,7 @@ public class TestApplication extends Application {
         icept.get().onError(err);
     }
 
-    static class Module extends AbstractModule implements RequestLogger {
+    public static class Module extends AbstractModule implements RequestLogger {
 
         @Override
         protected void configure() {

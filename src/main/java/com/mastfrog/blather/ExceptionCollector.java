@@ -26,15 +26,14 @@ package com.mastfrog.blather;
 import io.netty.channel.ChannelHandlerContext;
 
 /**
- * Used to colelct exceptions and rethrow them when await() methods exit
- * on WebsocketClientRequest.
+ * Used to colelct exceptions and rethrow them when await() methods exit on
+ * WebsocketClientRequest.
  *
  * @author Tim Boudreau
  */
-interface ExceptionCollector {
+public interface ExceptionCollector {
 
     void rethrow() throws Throwable;
 
     void onException(Throwable t, ChannelHandlerContext ctx);
-
 }
